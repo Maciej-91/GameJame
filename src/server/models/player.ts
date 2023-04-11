@@ -16,7 +16,7 @@ type LevelType = {
 
 type SpaceshipType = {
     name: string,
-    selected: boolean
+    selected?: boolean
 };
 
 const LevelSchema = new Schema<LevelType>({
@@ -38,6 +38,6 @@ const PlayerSchema = new Schema<PlayerType>({
     spaceships: [SpaceshipSchema]
 }, { versionKey: false });
 
-const Player = model<PlayerType>('Player', PlayerSchema);
+const Player = model<PlayerType>("players", PlayerSchema);
 
 export default Player;
