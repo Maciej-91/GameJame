@@ -1,5 +1,4 @@
 const path = require('path');
-const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 module.exports = [
     {
@@ -19,26 +18,24 @@ module.exports = [
             filename: 'index.js',
             path: path.resolve(__dirname, './'),
         },
-        externals: { 'mongodb': 'commonjs mongodb', 'express': 'commonjs express' },
-        plugins: [ new LicenseWebpackPlugin({outputFilename: 'licenses.txt'}) ]
+        externals: { 'mongodb': 'commonjs mongodb', 'express': 'commonjs express' }
     },
     {
-        entry: './src/client/script/index.ts',
+        entry: './src/client/script/index.js',
         target: 'web',
         module: {
             rules: [
                 {
-                    test: /\.ts$/,
-                    use: 'ts-loader',
+                    test: /\.js$/,
+                    use: 'babel-loader',
                     exclude: /node_modules/,
                 },
             ],
         },
-        resolve: { extensions: ['.ts', '.js'] },
+        resolve: { extensions: ['.js'] },
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, './public/static/script'),   
-        },
-        plugins: [ new LicenseWebpackPlugin({outputFilename: 'licenses.txt'}) ]
+        }
     }
 ];

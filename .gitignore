@@ -1,2 +1,4 @@
 node_modules/
-index.js*
+index.js.LICENSE.txt
+/index.js
+/public/static/script/index.js
