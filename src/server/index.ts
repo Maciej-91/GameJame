@@ -14,5 +14,5 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, './public')));
 app.get(/^((?!(\/api)).)*$/, (req, res) => res.sendFile(path.resolve(__dirname, './public/index.html')));
-// app.use('/api/', require('./routes/router'));
+app.use('/api/', require('./routes/router'));
 app.listen(PORT, () => console.log(`Server is listening on ${PORT}`));
