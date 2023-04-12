@@ -75,6 +75,19 @@ function create (){
     this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'planet' && removePlanet(body.gameObject));
 
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
+
+    this.physics.add.collider(spaceship, planets, () => {
+        this.scene.pause();
+        const closeModal = document.getElementById('game-over-modal');
+        closeModal.classList.remove('hidden');
+
+        const restartGame = () => {
+          closeModal.classList.add('hidden');
+          this.scene.restart();
+          document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+      }
+      document.getElementById('game-over-restart').addEventListener('click', restartGame);
+    });
 }
 
 function update (){
