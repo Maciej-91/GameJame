@@ -77,38 +77,36 @@ function create (){
     this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'planet' && removePlanet(body.gameObject));
 
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
-
-    this.physics.add.collider(spaceship, planets, () => {
-        this.scene.pause();
-        const closeModal = document.getElementById('game-over-modal');
-        closeModal.classList.remove('hidden');
-
-        const restartGame = () => {
-          closeModal.classList.add('hidden');
-          this.scene.restart();
-          document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-      }
-      document.getElementById('game-over-restart').addEventListener('click', restartGame);
-    });
 }
 
 function update (){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
 
     if(this.physics.world.overlap(spaceship, planets)) {
-        clearInterval(frameIntervalId);
-        frameIndex = 0;
-        removePlanets();
         this.scene.pause();
+        const closeModal = document.getElementById('game-over-modal');
+        closeModal.classList.remove('hidden');
+
+        const restartGame = () => {
+            closeModal.classList.add('hidden');
+            reset();
+            this.scene.restart();
+            document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+        }
+        document.getElementById('game-over-restart').addEventListener('click', restartGame);
     }
 
     const lastPlanet = planets[planets.length - 1];
     if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) {
-        clearInterval(frameIntervalId);
-        frameIndex = 0;
-        removePlanets();
+        reset();
         this.scene.pause();
     };
+}
+
+function reset(){
+    clearInterval(frameIntervalId);
+    frameIndex = 0;
+    removePlanets();
 }
 
 function createPlanet(game, planetData){
