@@ -21,7 +21,7 @@ var game = new Phaser.Game(config);
 
 let spaceship;
 let cursors;
-let obstacles = [];
+let planets = [];
 
 function randomPosition(){
     const x = 1920;
@@ -31,7 +31,7 @@ function randomPosition(){
 
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
-    this.load.image('obstacle', './static/img/death-star.png');
+    this.load.image('planet', './static/img/death-star.png');
 }
 
 function create (){
@@ -42,29 +42,29 @@ function create (){
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    for (let i = 0; i < 3; i++) createObstacle(this);
+    for (let i = 0; i < 3; i++) createplanet(this);
 
-    this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'obstacle' && removeObstacle(body.gameObject));
+    this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'planet' && removeplanet(body.gameObject));
 
-    setInterval(() => createObstacle(this) , 2000);
+    setInterval(() => createplanet(this) , 2000);
 }
 
 function update (){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
 
-    if(this.physics.world.overlap(spaceship, obstacles)) this.scene.restart();
+    if(this.physics.world.overlap(spaceship, planets)) this.scene.restart();
 }
 
-function createObstacle(scene){
-    let obstacle = scene.physics.add.image(randomPosition().x, randomPosition().y, 'obstacle');
-    obstacle.setScale(0.5);
-    obstacle.setImmovable(true);
-    obstacle.setVelocityX(-300);
-    obstacle.type = 'obstacle';
-    obstacles.push(obstacle);
+function createplanet(scene){
+    let planet = scene.physics.add.image(randomPosition().x, randomPosition().y, 'planet');
+    planet.setScale(0.5);
+    planet.setImmovable(true);
+    planet.setVelocityX(-300);
+    planet.type = 'planet';
+    planets.push(planet);
 }
 
-function removeObstacle(obstacle){
-    obstacles.splice(obstacles.indexOf(obstacle), 1);
-    obstacle.destroy();
+function removeplanet(planet){
+    planets.splice(planets.indexOf(planet), 1);
+    planet.destroy();
 }
