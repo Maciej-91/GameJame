@@ -51,41 +51,29 @@ function create (){
 
     this.physics.add.collider(spaceship, planets, () => {
         this.scene.pause();
-        const modal = gameOverModal();
-        document.body.appendChild(modal);
-        modal.classList.remove('hidden');
-        console.log(modal)
+        const closeModal = document.getElementById('game-over-modal');
+        closeModal.classList.remove('hidden');
+        // const modal = gameOverModal();
+        // document.body.appendChild(modal);
+        // modal.classList.remove('hidden');
+        // console.log(modal)
 
         // document.getElementById('game-over-restart').addEventListener('click', () =>  startG(modal, this.scene))
         // document.getElementById('game-over-restart').addEventListener('click', () =>  startG(modal, this.scene))
 
         const restartGame = () => {
           console.log("restartGame")
-          modal.classList.add('hidden');
+          closeModal.classList.add('hidden');
           this.scene.restart();
           document.getElementById('game-over-restart').removeEventListener('click', restartGame);
           console.log("test")
       }
-      console.log(document.getElementById('game-over-restart'))
+      // console.log(document.getElementById('game-over-restart'))
   
       document.getElementById('game-over-restart').addEventListener('click', restartGame);
 
 
     });
-
-    function startG(modal, scene) {
-        modal.classList.add('hidden');
-        scene.restart();
-    }
-
-    function restartGame(scene, modal) {
-        console.log("restartGame")
-        document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-        document.getElementById('game-over-restart').addEventListener('click', () => {
-            modal.classList.add('hidden');
-            scene.restart();
-        }, {once: true});
-    }
 
         //document.getElementById('game-over-restart').removeEventListener('click', () => this.scene.restart());
     //     document.getElementById('game-over-restart').addEventListener('click', () => {
@@ -161,6 +149,6 @@ function gameOverModal() {
           Quitter
         </button>
       </div>
-    </div`
+    </div>`
     return modal
 }
