@@ -37,6 +37,8 @@ let frameIntervalId;
 let currentLevel = null;
 let lives = [];
 let username = "";
+let topBannerLevel;
+let topBannerScore;
 
 let score = 0;
 let lifeCount = 3;
@@ -56,9 +58,9 @@ function preload (){
 function create (){
     this.add.rectangle(0, 0, getScreenSize().width, 70, 0xc51d2d).setOrigin(0, 0).setDepth(1);
 
-    let topBannerLevel = this.add.text(50, 18, `niveau : ${currentLevel.level} `, topBannerStyle).setDepth(1);
+    topBannerLevel = this.add.text(50, 18, `niveau : ${currentLevel.level} `, topBannerStyle).setDepth(1);
     topBannerLevel.setOrigin(0, 0);
-    let topBannerScore = this.add.text((getScreenSize().width / 2) - 130, 18, `Votre score : ${score} `, topBannerStyle).setDepth(1);
+    topBannerScore = this.add.text((getScreenSize().width / 2) - 130, 18, `Votre score : ${score} `, topBannerStyle).setDepth(1);
     topBannerScore.setOrigin(0, 0);
 
     for (let i = 0; i < lifeCount; i++) {
@@ -74,8 +76,6 @@ function create (){
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'planet' && removePlanet(body.gameObject));
-
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
 }
 
@@ -83,6 +83,7 @@ function update (){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
 
     if(this.physics.world.overlap(spaceship, planets)) {
+        clearInterval(frameIntervalId);
         this.scene.pause();
         const closeModal = document.getElementById('game-over-modal');
         closeModal.classList.remove('hidden');
@@ -96,6 +97,19 @@ function update (){
         document.getElementById('game-over-restart').addEventListener('click', restartGame);
     }
 
+    if(planets.length >= 1){
+
+        planets.forEach(planet => {
+            if(planet.x < spaceship.x && !planet.passed) {
+                planet.passed = true;
+                score ++;
+                topBannerScore.setText(`Votre score : ${score}`);
+            }
+            if(planet.x + planet.width / 2 < 0) removePlanet(planet);
+        })
+    }
+    
+
     const lastPlanet = planets[planets.length - 1];
     if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) {
         reset();
@@ -105,6 +119,7 @@ function update (){
 
 function reset(){
     clearInterval(frameIntervalId);
+    score = 0;
     frameIndex = 0;
     removePlanets();
 }
