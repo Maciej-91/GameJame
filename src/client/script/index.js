@@ -46,7 +46,7 @@ const topBannerStyle = {
     fontSize: 32,
     color: '#ffffff',
 }
- 
+
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
     this.load.image('planet', './static/img/death-star.png');
@@ -84,12 +84,18 @@ function create (){
         closeModal.classList.remove('hidden');
 
         const restartGame = () => {
-          closeModal.classList.add('hidden');
-          this.scene.restart();
-          document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-      }
-      document.getElementById('game-over-restart').addEventListener('click', restartGame);
+        closeModal.classList.add('hidden');
+        this.scene.restart();
+        document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+    }
+    document.getElementById('game-over-restart').addEventListener('click', restartGame);
     });
+
+    const levelText = this.add.text(getScreenSize().width / 2, getScreenSize().height / 2, `Niveau ${currentLevel.level}`, { fontFamily: 'Arial', fontSize: 64, color: '#ffffff' });
+    levelText.setOrigin(0.5, 0.5); 
+    setTimeout(() => {
+        levelText.setVisible(false);
+    }, 3000)
 }
 
 function update (){
@@ -150,6 +156,7 @@ async function startGame(event) {
     });
     new Phaser.Game(config);
 }
+
 
 function init (){
     const startModal = document.getElementById('start-game-modal');
