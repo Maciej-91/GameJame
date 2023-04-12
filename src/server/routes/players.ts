@@ -27,5 +27,24 @@ router.get('/:id', (req, res) => {
             res.status(500).send("Internal server error");
         });
 });
+//create a player
+router.post('/', (req, res) => {
+    const { username, totalScore, totalGames, levels, spaceships } = req.body;
+    const newPlayer = new Player({
+        username,
+        totalScore,
+        totalGames,
+        levels,
+        spaceships
+    });
+    newPlayer.save()
+        .then((player) => {
+            res.send(player);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send("Internal server error");
+        });
+});
 
 module.exports = router;

@@ -83,6 +83,24 @@ function create (){
         const closeModal = document.getElementById('game-over-modal');
         closeModal.classList.remove('hidden');
 
+       //stock data
+        fetch('/api/players', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: username,
+              totalScore: score,
+              totalGames: 5,
+              levels: [1, 2, 3],
+              spaceships: ['UFO', 'Rocket']
+            })
+          })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error(error))
+          
         const restartGame = () => {
           closeModal.classList.add('hidden');
           this.scene.restart();
