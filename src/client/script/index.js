@@ -36,6 +36,7 @@ let frameIndex = 0;
 let frameIntervalId;
 let currentLevel = null;
 let lives = [];
+let username = "";
 
 let score = 0;
 let lifeCount = 3;
@@ -68,6 +69,7 @@ function create (){
     spaceship = this.physics.add.image(getScreenSize().width * 0.2, getScreenSize().height / 2, 'spaceship');
     spaceship.setScale(0.3);
     spaceship.setCollideWorldBounds(true);
+
     spaceship.body.gravity.y = 300;
 
     cursors = this.input.keyboard.createCursorKeys();
@@ -135,12 +137,26 @@ function removePlanets(){
     planets = [];
 }
 
-async function startLevel(level) {
-    currentLevel = await getLevel(level).then(res => {
+async function startGame(event) {
+    event.preventDefault();
+    username = document.getElementById('username').value;
+
+    const startModal = document.getElementById('start-game-modal');
+    startModal.classList.add('hidden');
+
+    currentLevel = await getLevel(1).then(res => {
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });
     new Phaser.Game(config);
 }
 
-startLevel(1);
+function init (){
+    const startModal = document.getElementById('start-game-modal');
+    startModal.classList.remove('hidden');
+
+    const startForm = document.getElementById('start-game-form');
+    startForm.addEventListener('submit', startGame);
+}
+
+window.onload = init;
