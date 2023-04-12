@@ -19,6 +19,7 @@ const config = {
 
 var game = new Phaser.Game(config);
 
+
 let spaceship;
 let cursors;
 let planets = [];
@@ -53,39 +54,52 @@ function create (){
         const modal = gameOverModal();
         document.body.appendChild(modal);
         modal.classList.remove('hidden');
+        console.log(modal)
 
-        document.getElementById('game-over-restart').removeEventListener('click', () => {
-            console.log("restart")
-            modal.classList.add('hidden');
-            this.scene.restart();
-        });
-        document.getElementById('game-over-exit').removeEventListener('click', () => {
-            modal.classList.add('hidden');
-            this.scene.stop();
-        });
-    
+        // document.getElementById('game-over-restart').addEventListener('click', () =>  startG(modal, this.scene))
+        // document.getElementById('game-over-restart').addEventListener('click', () =>  startG(modal, this.scene))
+
+        const restartGame = () => {
+          console.log("restartGame")
+          modal.classList.add('hidden');
+          this.scene.restart();
+          document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+          console.log("test")
+      }
+      console.log(document.getElementById('game-over-restart'))
+  
+      document.getElementById('game-over-restart').addEventListener('click', restartGame);
+
+
+    });
+
+    function startG(modal, scene) {
+        modal.classList.add('hidden');
+        scene.restart();
+    }
+
+    function restartGame(scene, modal) {
+        console.log("restartGame")
+        document.getElementById('game-over-restart').removeEventListener('click', restartGame);
         document.getElementById('game-over-restart').addEventListener('click', () => {
             modal.classList.add('hidden');
-            this.scene.restart();
-        });
+            scene.restart();
+        }, {once: true});
+    }
+
+        //document.getElementById('game-over-restart').removeEventListener('click', () => this.scene.restart());
+    //     document.getElementById('game-over-restart').addEventListener('click', () => {
+    //         console.log("eventListener")
+    //         modal.classList.add('hidden');
+    //         this.scene.restart();
+    //     });
     
-        document.getElementById('game-over-exit').addEventListener('click', () => {
-            modal.classList.add('hidden');
-            this.scene.stop();
-        });
-      });
-}
-
-function restartFunction() {
-    const modal = document.getElementById('game-over-modal');
-    modal.classList.add('hidden');
-    scene.restart();
-}
-
-function exitFunction() {
-    const modal = document.getElementById('game-over-modal');
-    modal.classList.add('hidden');
-    scene.stop();
+    //     document.getElementById('game-over-exit').addEventListener('click', () => {
+    //         modal.classList.add('hidden');
+    //         this.scene.stop();
+    //     }, {once: true});
+    //   });
+    
 }
 
 function update (){
@@ -108,22 +122,12 @@ function removeplanet(planet){
     planet.destroy();
 }
 
-function restartGame(){
-    modal.classList.add('hidden');
-    this.scene.restart();
-}
-
-function endGame() {
-                modal.classList.add('hidden');
-            this.scene.stop();
-}
-
 function gameOverModal() {
     const modal = document.createElement('div');
     modal.className = 'fixed z-10 inset-0 overflow-y-auto hidden';
-    modal.id = 'game-over-modal';
+    // modal.id = 'game-over-modal';
     modal.innerHTML = `
-  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+  <div id='game-over-modal' class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
     <div class="fixed inset-0 transition-opacity">
       <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
     </div>
