@@ -22,6 +22,19 @@ var game = new Phaser.Game(config);
 let spaceship;
 let cursors;
 let planets = [];
+let coeur = [];
+
+//valeur de test pour le bandeau
+let niveau = 1;
+let score = 0;
+let vie = 3;
+
+const style_bandeau = {
+    fontFamily: 'Arial',
+    fontSize: 32,
+    color: '#ffffff',
+}
+
 
 function randomPosition(){
     const x = 1920;
@@ -32,9 +45,23 @@ function randomPosition(){
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
     this.load.image('planet', './static/img/death-star.png');
+    this.load.image('heart', './static/img/heart.png');
 }
 
 function create (){
+
+    //-----------------------bandeau-------------------------
+    this.add.rectangle(0, 0, config.width, 70, 0xff0000).setOrigin(0, 0);
+
+    let niveau_bandeau = this.add.text(50, 18, `niveau : ${niveau} `, style_bandeau);
+    niveau_bandeau.setOrigin(0, 0);
+    let score_bandeau = this.add.text((config.width / 2) - 130, 18, `Score : ${score} `, style_bandeau);
+    score_bandeau.setOrigin(0, 0);
+
+    for (let i = 0; i < vie; i++) {
+        coeur.push(this.add.image(config.width - (i * 75) - 80, 38, 'heart'));
+    }
+    
     spaceship = this.physics.add.image(500, 1, 'spaceship');
     spaceship.setScale(0.5);
     spaceship.setCollideWorldBounds(true);
