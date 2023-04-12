@@ -91,7 +91,7 @@ function create (){
     document.getElementById('game-over-restart').addEventListener('click', restartGame);
     });
 
-    const levelText = this.add.text(getScreenSize().width / 2, getScreenSize().height / 2, `Niveau ${currentLevel.level}`, { fontFamily: 'Arial', fontSize: 64, color: '#ffffff' });
+    const levelText = this.add.text(getScreenSize().width / 2, getScreenSize().height / 2, `Niveau ${currentLevel.level} `, { fontFamily: 'Arial', fontSize: 64, color: '#ffffff' });
     levelText.setOrigin(0.5, 0.5); 
     setTimeout(() => {
         levelText.setVisible(false);
