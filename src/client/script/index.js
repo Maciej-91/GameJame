@@ -35,9 +35,18 @@ function preload (){
 }
 
 function create (){
+    // Afficher la pop-up de démarrage
+    const startPopup = document.getElementById('start-popup');
+    startPopup.classList.remove('hidden');
+
+    // Récupérer le formulaire de démarrage
+    const startForm = document.getElementById('start-form');
+    startForm.addEventListener('submit', startGame);
+
     spaceship = this.physics.add.image(500, 1, 'spaceship');
     spaceship.setScale(0.5);
     spaceship.setCollideWorldBounds(true);
+
     spaceship.body.gravity.y = 300;
 
     cursors = this.input.keyboard.createCursorKeys();
@@ -48,6 +57,18 @@ function create (){
 
     setInterval(() => createplanet(this) , 2000);
 }
+
+function startGame(event) {
+    console.log("lancement");
+    event.preventDefault();
+    // on stock le nom du vaisseau choisi
+    const shipName = document.getElementById('ship-name').value;
+
+    // Cacher la pop-up de démarrage
+    const startPopup = document.getElementById('start-popup');
+    startPopup.classList.add('hidden');
+
+  }
 
 function update (){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
