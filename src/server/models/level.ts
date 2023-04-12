@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 
 type LevelType = {
     name: string,
+    level: number,
     frames: LevelFrameType[]
 };
 
@@ -21,6 +22,7 @@ const LevelFrameSchema = new Schema<LevelFrameType>([ObstaclesSchema], { _id: fa
 
 const LevelSchema = new Schema<LevelType>({
     name: { type: String, required: true, unique: true },
+    level: { type: Number, required: true, unique: true },
     frames: [LevelFrameSchema]
 }, { versionKey: false });
 

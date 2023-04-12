@@ -14,10 +14,10 @@ router.get('/', (req, res) => {
         })
 });
 
-router.get('/:id', (req, res) => {
-    const id: string = req.params.id;
-    if(!id) return res.status(400).send("No id provided");
-    Level.findById(id)
+router.get('/:level', (req, res) => {
+    const level: string = req.params.level;
+    if(!level) return res.status(400).send("No level provided");
+    Level.findOne({ level: level })
         .then((level) => {
             if(!level) return res.status(404).send("Level not found");
             res.send(level);

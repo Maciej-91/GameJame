@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
-import Levels from './levels.js';
+import Level from './level.js';
 
-function getLevel(level) {
-    if(!Levels(getScreenSize().height)[level]) throw new Error('Level not found');
-    return Levels(getScreenSize().height)[level];
+async function getLevel(level) {
+    return Level.get(level);
 }
 
 function getScreenSize() {
@@ -30,14 +29,12 @@ const config = {
     }
 };
 
-var game = new Phaser.Game(config);
-
 let spaceship;
 let cursors;
 let planets = [];
 let frameIndex = 0;
 let frameIntervalId;
-let currentLevel = getLevel(0);
+let currentLevel = null;
 
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
@@ -77,7 +74,7 @@ function update (){
 }
 
 function createPlanet(game, planetData){
-    let planet = game.physics.add.image((getScreenSize().width + 100 + planetData.x || 0), planetData.y, 'planet');
+    let planet = game.physics.add.image(getScreenSize().width + 100 + planetData.x || 0, getScreenSize().height * planetData.y || 0, 'planet');
     planet.setScale(0.3);
     planet.setImmovable(true);
     planet.setVelocityX(-300);
@@ -87,7 +84,7 @@ function createPlanet(game, planetData){
 
 function createPlanets(game, frame){
     if(!frame) return;
-    frame.forEach((planetData) => setTimeout(() => createPlanet(game, planetData), planetData));
+    Object.values(frame).forEach((planetData) => setTimeout(() => createPlanet(game, planetData), planetData));
     frameIndex++;
     if (frameIndex >= currentLevel.frames.length - 1) clearInterval(frameIntervalId);
 }
@@ -101,3 +98,13 @@ function removePlanets(){
     planets.forEach(planet => planet.destroy());
     planets = [];
 }
+
+async function startLevel(level) {
+    currentLevel = await getLevel(level).then(res => {
+        if(res.ok) return res.json();
+        throw new Error('Failed to load level');
+    });
+    new Phaser.Game(config);
+}
+
+startLevel(1);
