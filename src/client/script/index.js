@@ -17,7 +17,13 @@ const config = {
     }
 };
 
-var game = new Phaser.Game(config);
+// Afficher la pop-up de démarrage
+const startPopup = document.getElementById('start-popup');
+startPopup.classList.remove('hidden');
+
+// Récupérer le formulaire de démarrage
+const startForm = document.getElementById('start-form');
+startForm.addEventListener('submit', startGame);
 
 let spaceship;
 let cursors;
@@ -35,14 +41,6 @@ function preload (){
 }
 
 function create (){
-    // Afficher la pop-up de démarrage
-    const startPopup = document.getElementById('start-popup');
-    startPopup.classList.remove('hidden');
-
-    // Récupérer le formulaire de démarrage
-    const startForm = document.getElementById('start-form');
-    startForm.addEventListener('submit', startGame);
-
     spaceship = this.physics.add.image(500, 1, 'spaceship');
     spaceship.setScale(0.5);
     spaceship.setCollideWorldBounds(true);
@@ -68,6 +66,7 @@ function startGame(event) {
     const startPopup = document.getElementById('start-popup');
     startPopup.classList.add('hidden');
 
+    new Phaser.Game(config);
   }
 
 function update (){
