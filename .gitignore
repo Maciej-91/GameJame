@@ -2,3 +2,6 @@ node_modules/
 index.js.LICENSE.txt
 /index.js
 /public/static/script/index.js
+/public/static/style/index.css
+.env
+.DS_Store
