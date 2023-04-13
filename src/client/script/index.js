@@ -39,14 +39,12 @@ let currentLevel = null;
 let player;
 let incerment = false;
 
-let score = 0;
-let lifeCount = 3;
 
-const topBannerStyle = {
-    fontFamily: 'Arial',
-    fontSize: 32,
-    color: '#ffffff',
-}
+//Variable test fonction cookie
+let score = 100;
+let nom_joueur = "joueur1";
+
+
 
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
@@ -55,21 +53,21 @@ function preload (){
 }
 
 function create (){
-  if(incerment === false) {
+if(incerment === false) {
     document.getElementById("banner").style.display = "flex"
     const divHeart = document.getElementById("heart")
     for (let i = 0; i < player.health; i++) {
-      const heart = document.createElement('img');
-      heart.src = '../../../static/img/heart.png'
-      heart.classList.add('heart')
-      divHeart.appendChild(heart)
+    const heart = document.createElement('img');
+    heart.src = '../../../static/img/heart.png'
+    heart.classList.add('heart')
+    divHeart.appendChild(heart)
     }
-  } else {
+} else {
     const divHeart = document.getElementById("heart")
     if (divHeart.lastChild) {
-      divHeart.removeChild(divHeart.lastChild);
+    divHeart.removeChild(divHeart.lastChild);
     }
-  }
+}
 
     spaceship = this.physics.add.image(getScreenSize().width * 0.2, getScreenSize().height / 2, 'spaceship');
     spaceship.setScale(0.3);
@@ -84,19 +82,35 @@ function create (){
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
 
     this.physics.add.collider(spaceship, planets, () => {
-      if(player.health === 1) {
+    if(player.health === 1) {
         const divHeart = document.getElementById("heart")
         divHeart.removeChild(divHeart.lastChild);
         this.scene.pause();
         const closeModal = document.getElementById('game-over-modal');
         closeModal.classList.remove('hidden');
 
+        cookie(nom_joueur, score)
+
         const restartGame = () => {
         closeModal.classList.add('hidden');
         this.scene.restart();
+        player.health = 3;
         document.getElementById('game-over-restart').removeEventListener('click', restartGame);
     }
-    document.getElementById('game-over-restart').addEventListener('click', restartGame);
+        document.getElementById('game-over-restart').addEventListener('click', restartGame);
+        incerment = false;
+    } else {
+        this.scene.pause();
+        const modalBetweenFail = document.getElementById("between-fail")
+        modalBetweenFail.classList.remove('hidden');
+        setTimeout(() => {
+        modalBetweenFail.classList.add('hidden');
+        player.health -= 1;
+        incerment = true
+        this.scene.restart();
+        }, 1000);
+
+    }
     });
 
     const levelText = this.add.text(getScreenSize().width / 2, getScreenSize().height / 2, `Niveau ${currentLevel.level} `, { fontFamily: 'Arial', fontSize: 64, color: '#ffffff' });
@@ -152,7 +166,7 @@ function removePlanets(){
 }
 
 async function startGame(event) {
-  player = new Player("", 0, 3, 1)
+player = new Player("", 0, 3, 1)
     event.preventDefault();
     player.username = document.getElementById('username').value;
 
@@ -166,13 +180,29 @@ async function startGame(event) {
     new Phaser.Game(config);
 }
 
-
 function init (){
     const startModal = document.getElementById('start-game-modal');
     startModal.classList.remove('hidden');
 
     const startForm = document.getElementById('start-game-form');
     startForm.addEventListener('submit', startGame);
+}
+
+
+function cookie(nom_joueur, score) {
+    let score_cookie = {};
+    const cookies = document.cookie.split(';');
+    cookies.forEach(cookie => {
+        const [key, value] = cookie.split('=');
+        if (key.trim() === 'scores') {
+            score_cookie = JSON.parse(value);
+        }
+    });
+    !score_cookie.hasOwnProperty(nom_joueur) ? score_cookie[nom_joueur] = [score] : score_cookie[nom_joueur].push(score);
+    const json = JSON.stringify(score_cookie);
+    document.cookie = `scores=${json}`;
+
+    console.log(score_cookie);
 }
 
 window.onload = init;
