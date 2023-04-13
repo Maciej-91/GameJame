@@ -82,6 +82,24 @@ function create (){
         const closeModal = document.getElementById('game-over-modal');
         closeModal.classList.remove('hidden');
 
+        //highscores modal
+        const ButtonHighscoresModal = document.getElementById('highScores-by-level');
+        const highScoresModal = document.getElementById('high-scores-modal');
+        const highScoresClose = document.getElementById('high-scores-close');
+        
+
+        const DisplayhighscoresModal = () => {
+          highScoresModal.classList.remove('hidden');
+          closeModal.classList.add('hidden');
+        }
+        const DisplayGameOverModal = () => {
+          highScoresModal.classList.add('hidden');
+          closeModal.classList.remove('hidden');
+        }
+
+        ButtonHighscoresModal.addEventListener('click', DisplayhighscoresModal);
+        highScoresClose.addEventListener('click', DisplayGameOverModal);
+
         const restartGame = () => {
           closeModal.classList.add('hidden');
           this.scene.restart();
