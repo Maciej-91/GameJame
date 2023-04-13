@@ -6,7 +6,7 @@ import Ranking from './ranking.js'
 const IMG_PATH = './static/img';
 
 async function getRanking(ranking) {
-  return Ranking.get(ranking);
+return Ranking.get(ranking);
 }
 
 function getScreenSize() {
