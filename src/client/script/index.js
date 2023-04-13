@@ -50,6 +50,7 @@ function create (){
   son.play();
   if(incrementLife === false) {
     const divLives = document.getElementById("lives")
+    divLives.innerHTML = '';
     for (let i = 0; i < player.health; i++) {
       const live = document.createElement('img');
       live.src = `${IMG_PATH}/millennium-falcon.png`;
@@ -87,25 +88,10 @@ function update(){
 
             const playerCookie = getCookie(player);
             if(!playerCookie || (playerCookie && player.score > playerCookie.score)) setCookie(player);
+            Ranking.create(player).then(() => {
+                Ranking.get(10).then(response => response.json()).then(rankings => createRankingTable(rankings));
+            });
 
-
-            // Players.create({
-            //     username: player.username,
-            //     key: Math.floor(Math.random() * 99999).toString().padStart(5, '0'),
-            //     totalScore: player.score,
-            //     totalGames: 5,
-            //     points: player.score,
-            //     levels: [{
-            //         level: currentLevel.level,
-            //         score: player.score,
-            //         games: 5
-            //     }],
-            //     spaceships: [{
-            //         name: "Faucon Millenium",
-            //         selected: true
-            //     }]
-            // })
-            // .catch(data => console.log(data))
             const restartGame = () => {
                 document.getElementById('game-over-modal').classList.add('hidden');
                 reset(true);
@@ -132,6 +118,8 @@ function update(){
 
     }
 
+    const lastPlanet = planets[planets.length - 1];
+
     if(planets.length >= 1){
         planets.forEach(planet => {
             if(planet.x < spaceship.x && !planet.passed) {
@@ -139,15 +127,41 @@ function update(){
                 player.score += Math.floor(Math.random() * 5) + 8;
                 updateBannerScore();
             }
-            if(planet.x + planet.width / 2 < 0) removePlanet(planet);
+            if(planet.x + planet.width / 2 < 0 && lastPlanet !== planet) removePlanet(planet);
         })
     }
     
-    const lastPlanet = planets[planets.length - 1];
-    if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) {
-        reset(true);
-        this.scene.pause();
-    };
+    if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) nextLevel(this);
+}
+
+async function nextLevel(game){
+    player.level += 1;
+    const lastLevel = currentLevel.level;
+    son.stop();
+    clearInterval(frameIntervalId);
+    frameIndex = 0;
+    removePlanets();
+    updateBannerLevel();
+    currentLevel = await Levels.get(player.level)
+        .then(res => res.json())
+        .catch(() => {
+            setCookie(player);
+            Ranking.create(player).then(() => {
+                Ranking.get(10).then(response => response.json()).then(rankings => createRankingTable(rankings));
+            });
+            reset();
+            showRankingModal();
+            game.scene.pause();
+        });
+
+    if(currentLevel.level !== lastLevel) {
+        document.querySelector("#level-change-id span").innerHTML = currentLevel.level;
+        document.getElementById("level-change").classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById("level-change").classList.add('hidden');
+        }, 1000);
+        game.scene.restart();
+    }
 }
 
 const showRankingModal = () => {
@@ -165,22 +179,27 @@ function updateBannerScore() {
     document.querySelector("#score span").innerHTML = player.score;
 };
 
+function updateBannerLevel() {
+    document.querySelector("#level span").innerHTML = player.level;
+}
+
 function reset(resetPlayer = false){
     clearInterval(frameIntervalId);
     son.stop();
     if(resetPlayer === true) {
-        player.score = 0;
         player.health = 3;
         player.level = 1;
-        updateBannerScore();
     }
+    player.score = 0;
+    updateBannerScore();
+    updateBannerLevel();
     frameIndex = 0;
     removePlanets();
 }
 
 function createPlanet(game, planetData){
     let planet = game.physics.add.image(getScreenSize().width + 100 + planetData.x || 0, getScreenSize().height * planetData.y || 0, 'planet');
-    planet.setScale(0.3);
+    planet.setScale(0.05);
     planet.setImmovable(true);
     planet.setVelocityX(-300);
     planet.type = 'planet';
@@ -206,11 +225,13 @@ function removePlanets(){
 
 function createRankingTable(rankings) {
     const rankingTable = document.getElementById('ranking-table');
+    rankingTable.innerHTML = '';
 
     rankings.forEach((ranking) => {
         const row = document.createElement('tr');
     
         const userCell = document.createElement('td');
+        userCell.classList.add('py-2.5');
         const spanUsername = document.createElement('span');
         spanUsername.textContent = ranking.username;
         userCell.appendChild(spanUsername);
@@ -221,7 +242,7 @@ function createRankingTable(rankings) {
         userCell.appendChild(spanKey);
     
         const scoreCell = document.createElement('td');
-        scoreCell.classList.add('font-semibold');
+        scoreCell.classList.add('font-semibold', 'text-right', 'py-2.5');
         scoreCell.textContent = ranking.score;
     
         row.appendChild(userCell);

@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 router.get('/:limit', (req, res) => {
     const limit = parseInt(req.params.limit);
     if(!limit) return res.status(400).send("No limit provided");
-    Ranking.find().limit(limit)
+    Ranking.find().sort({ score: -1 }).limit(limit)
         .then((ranking) => {
             if(!ranking) return res.status(404).send("No ranking found");
             res.status(200).send(ranking);
@@ -29,11 +29,11 @@ router.get('/:limit', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const { name, key, score } = req.body;
-    if(!name) return res.status(400).send("No name provided");
+    const { username, key, score } = req.body;
+    console.log(req.body)
+    if(!username) return res.status(400).send("No name provided");
     if(!key) return res.status(400).send("No key provided");
-    if(!score) return res.status(400).send("No score provided");
-    const ranking = { name, key, score };
+    const ranking = { username, key, score };
     Ranking.create(ranking)
         .then((ranking) => ranking ? res.status(201).send() : res.status(500).send("Internal server error"))
         .catch((err) => {

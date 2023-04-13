@@ -10,7 +10,7 @@ const RankingSchema = new Schema<RankingType>({
     username: { type: String, required: true },
     key: { type: String, required: true },
     score: { type: Number, required: true, default: 0 }
-}, { _id: false, versionKey: false });
+}, { versionKey: false });
 
 const Ranking = model<RankingType>("rankings", RankingSchema);
 
