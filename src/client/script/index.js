@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
 import Level from './level.js';
+import Ranking from './ranking.js'
 import Player from '../models/player.js';
 
 async function getLevel(level) {
     return Level.get(level);
+}
+
+async function getRanking(ranking) {
+  return Ranking.get(ranking);
 }
 
 function getScreenSize() {
@@ -162,6 +167,12 @@ async function startGame(event) {
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });
+    //Méthode pour récupérer le classement
+    let ranking = await getRanking('topfive').then(res => {
+      if(res.ok) return res.json();
+      throw new Error('Failed to return Ranking')
+    })
+    console.log("ranking", ranking)
     new Phaser.Game(config);
 }
 
