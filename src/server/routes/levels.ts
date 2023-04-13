@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
     Level.find()
         .then((levels) => {
             if(!levels) return res.status(404).send("No levels found");
-            res.send(levels);
+            res.status(200).send(levels);
         })
         .catch((err) => {
             console.error(err);
@@ -20,7 +20,7 @@ router.get('/:level', (req, res) => {
     Level.findOne({ level: level })
         .then((level) => {
             if(!level) return res.status(404).send("Level not found");
-            res.send(level);
+            res.status(200).send(level);
         })
         .catch((err) => {
             console.error(err);

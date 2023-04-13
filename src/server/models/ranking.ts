@@ -1,17 +1,17 @@
 import { model, Schema } from 'mongoose';
 
 type RankingType = {
-    name: string,
+    username: string,
     key: string,
     score: number
 }
 
 const RankingSchema = new Schema<RankingType>({
-    name: { type: String, required: true, unique: true },
-    key: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
+    key: { type: String, required: true },
     score: { type: Number, required: true, default: 0 }
 }, { _id: false, versionKey: false });
 
-const Ranking = model<RankingType>("ranking", RankingSchema);
+const Ranking = model<RankingType>("rankings", RankingSchema);
 
 export default Ranking;

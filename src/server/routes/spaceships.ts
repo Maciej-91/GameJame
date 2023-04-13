@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
     Spaceship.find()
         .then((spaceships) => {
             if(!spaceships) return res.status(404).send("No spaceships found");
-            res.send(spaceships);
+            res.status(200).send(spaceships);
         })
         .catch((err) => {
             console.error(err);
@@ -20,7 +20,7 @@ router.get('/:id', (req, res) => {
     Spaceship.findById(id)
         .then((spaceship) => {
             if(!spaceship) return res.status(404).send("Spaceship not found");
-            res.send(spaceship);
+            res.status(200).send(spaceship);
         })
         .catch((err) => {
             console.error(err);

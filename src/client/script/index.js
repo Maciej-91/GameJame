@@ -5,10 +5,6 @@ import Ranking from './ranking.js'
 
 const IMG_PATH = './static/img';
 
-async function getRanking(ranking) {
-  return Ranking.get(ranking);
-}
-
 function getScreenSize() {
     return {
         width: window.innerWidth,
@@ -87,8 +83,7 @@ function update(){
             divLives.removeChild(divLives.lastChild);
             clearInterval(frameIntervalId);
             this.scene.pause();
-            const closeModal = document.getElementById('game-over-modal');
-            closeModal.classList.remove('hidden');
+            document.getElementById('game-over-modal').classList.remove('hidden');;
 
             console.log(player);
 
@@ -110,23 +105,17 @@ function update(){
             // })
             // .catch(data => console.log(data))
     
-            const restartGame = () => {
-                closeModal.classList.add('hidden');
-                reset(true);
-                this.scene.restart();
-                document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-            }
             document.getElementById('game-over-restart').addEventListener('click', restartGame);
+            document.getElementById('ranking-open').addEventListener('click', showRankingModal);
+            document.getElementById('ranking-close').addEventListener('click', showGameOverModal);
             incrementLife = false;
         }
         else {
-            son.stop()
             reset();
             this.scene.pause();
-            const modalBetweenFail = document.getElementById("between-fail")
-            modalBetweenFail.classList.remove('hidden');
+            document.getElementById("between-fail").classList.remove('hidden');
             setTimeout(() => {
-              modalBetweenFail.classList.add('hidden');
+              document.getElementById("between-fail").classList.add('hidden');
               player.health -= 1;
               incrementLife = true
               this.scene.restart();
@@ -154,13 +143,32 @@ function update(){
     };
 }
 
+const showRankingModal = () => {
+    document.getElementById('ranking-modal').classList.remove('hidden');
+    document.getElementById('game-over-modal').classList.add('hidden');
+    document.getElementById('game-over-restart').removeEventListener('click', showRankingModal);
+}
+const showGameOverModal = () => {
+    document.getElementById('ranking-modal').classList.add('hidden');
+    document.getElementById('game-over-modal').classList.remove('hidden');
+    document.getElementById('game-over-restart').removeEventListener('click', showGameOverModal);
+}
+
+const restartGame = () => {
+    document.getElementById('game-over-modal').classList.add('hidden');
+    reset(true);
+    this.scene.restart();
+    document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+}
+
 function updateBannerScore() {
     document.querySelector("#score span").innerHTML = player.score;
 };
 
-function reset(restPlayer = false){
+function reset(resetPlayer = false){
     clearInterval(frameIntervalId);
-    if(restPlayer === true) {
+    son.stop();
+    if(resetPlayer === true) {
         player = new Players(player.username);
         updateBannerScore();
     }
@@ -194,6 +202,33 @@ function removePlanets(){
     planets = [];
 }
 
+function createRankingTable(rankings) {
+    const rankingTable = document.getElementById('ranking-table');
+
+    rankings.forEach((ranking) => {
+        const row = document.createElement('tr');
+    
+        const userCell = document.createElement('td');
+        const spanUsername = document.createElement('span');
+        spanUsername.textContent = ranking.username;
+        userCell.appendChild(spanUsername);
+
+        const spanKey = document.createElement('span');
+        spanKey.classList.add('text-gray-500');
+        spanKey.textContent = `#${ranking.key}`;
+        userCell.appendChild(spanKey);
+    
+        const scoreCell = document.createElement('td');
+        scoreCell.classList.add('font-semibold');
+        scoreCell.textContent = ranking.score;
+    
+        row.appendChild(userCell);
+        row.appendChild(scoreCell);
+    
+        rankingTable.appendChild(row);
+    });
+}
+
 async function startGame(event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -208,12 +243,14 @@ async function startGame(event) {
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });
-    //Méthode pour récupérer le classement
-    let ranking = await getRanking('topfive').then(res => {
+
+    const rankingLimit = 10; 
+    const rankings = await Ranking.get(rankingLimit).then(res => {
       if(res.ok) return res.json();
       throw new Error('Failed to return Ranking')
     })
-    console.log("ranking", ranking)
+    document.querySelector("#ranking-modal-title span").innerHTML = rankingLimit;
+    createRankingTable(rankings);
     new Phaser.Game(config);
 }
 
