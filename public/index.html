@@ -9,7 +9,17 @@
 	<script type="module" src="./static/script/index.js"></script>
 </head>
 <body class="overflow-hidden bg-black">
-	<!-- Start Game Start Modal -->
+	<div id="banner" class="banner hidden">
+		<div class="text">
+			niveau : 1
+		</div>
+		<div class="text">
+			Votre score : 0
+		</div>
+		<div id="heart" class="heartDiv">
+		</div>
+	</div>
+	<!-- Start Accueil Modal -->
 	<div id="start-game-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
 		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 			<div class="fixed inset-0 transition-opacity">
@@ -38,7 +48,7 @@
 			</div>
 		</div>
 	</div>
-	<!-- End Game Start Modal -->
+	<!-- End Accueil Modal -->
 	<!-- Start Game Over Modal-->
 	<div id="game-over-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
 		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -70,5 +80,45 @@
 		</div>
 	</div>
 	<!--End Game Over Modal-->
+	<div id="between-fail" class="fixed z-10 inset-0 overflow-y-auto hidden">
+		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+			<div class="fixed inset-0 transition-opacity">
+				<div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+			</div>
+			<span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+			<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+				<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+					<div class="sm:flex sm:items-start" style="justify-content: center;">
+						<div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+							<h3 class="text-lg leading-6 font-medium text-gray-900">Touché</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
+<style>
+	.banner {
+		width: 100%; 
+		height: 5rem; 
+		background-color: red; 
+		display: none; 
+		flex-direction: row; 
+		justify-content: space-between; 
+		padding: 0.5rem;
+	}
+	.text {
+		font-size: 2em;
+		color: white;
+	}
+	.heartDiv {
+		display: flex;
+		flex-direction: row;
+	}
+	.heart {
+		width: 80px;
+		height: 80px;
+	}
+</style>
