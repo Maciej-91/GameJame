@@ -2,8 +2,10 @@ import { model, Schema } from 'mongoose';
 
 type PlayerType = {
     username: string,
+    key: string,
     totalScore: number,
     totalGames: number,
+    points: number,
     levels: LevelType[],
     spaceships: SpaceshipType[]
 };
@@ -31,9 +33,11 @@ const SpaceshipSchema = new Schema<SpaceshipType>({
 }, { _id: false, versionKey: false });
 
 const PlayerSchema = new Schema<PlayerType>({
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
+    key: { type: String, required: true },
     totalScore: { type: Number, required: true, default: 0 },
     totalGames: { type: Number, required: true, default: 0 },
+    points: { type: Number, required: true, default: 0 },
     levels: [LevelSchema],
     spaceships: [SpaceshipSchema]
 }, { versionKey: false });

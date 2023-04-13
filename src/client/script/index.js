@@ -1,10 +1,8 @@
 import Phaser from 'phaser';
-import Level from './level.js';
-import Player from '../models/player.js';
+import Levels from './levels.js';
+import Players from './players.js';
 
-async function getLevel(level) {
-    return Level.get(level);
-}
+const IMG_PATH = './static/img';
 
 function getScreenSize() {
     return {
@@ -37,28 +35,26 @@ let frameIndex = 0;
 let frameIntervalId;
 let currentLevel = null;
 let player;
-let incerment = false;
+let incrementLife = false;
 
 function preload (){
-    this.load.image('spaceship', './static/img/millennium-falcon.png');
-    this.load.image('planet', './static/img/death-star.png');
-    this.load.image('heart', './static/img/heart.png');
+    this.load.image('spaceship', `${IMG_PATH}/millennium-falcon.png`);
+    this.load.image('planet', `${IMG_PATH}/death-star.png`);
 }
 
 function create (){
-  if(incerment === false) {
-    document.getElementById("banner").style.display = "flex"
-    const divHeart = document.getElementById("heart")
+  if(incrementLife === false) {
+    const divLives = document.getElementById("lives")
     for (let i = 0; i < player.health; i++) {
-      const heart = document.createElement('img');
-      heart.src = '../../../static/img/heart.png'
-      heart.classList.add('heart')
-      divHeart.appendChild(heart)
+      const live = document.createElement('img');
+      live.src = `${IMG_PATH}/millennium-falcon.png`;
+      live.classList.add('w-10');
+      divLives.appendChild(live);
     }
   } else {
-    const divHeart = document.getElementById("heart")
-    if (divHeart.lastChild) {
-      divHeart.removeChild(divHeart.lastChild);
+    const divLives = document.getElementById("lives")
+    if (divLives.lastChild) {
+      divLives.removeChild(divLives.lastChild);
     }
   }
 
@@ -70,58 +66,96 @@ function create (){
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    this.physics.world.on('worldbounds', (body) => body.gameObject && body.gameObject.type === 'planet' && removePlanet(body.gameObject));
-
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
-
-    this.physics.add.collider(spaceship, planets, () => {
-      if(player.health === 1) {
-        const divHeart = document.getElementById("heart")
-        divHeart.removeChild(divHeart.lastChild);
-        this.scene.pause();
-        const closeModal = document.getElementById('game-over-modal');
-        closeModal.classList.remove('hidden');
-
-        const restartGame = () => {
-          closeModal.classList.add('hidden');
-          this.scene.restart();
-          player.health = 3;
-          document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-      }
-        document.getElementById('game-over-restart').addEventListener('click', restartGame);
-        incerment = false;
-      } else {
-        this.scene.pause();
-        const modalBetweenFail = document.getElementById("between-fail")
-        modalBetweenFail.classList.remove('hidden');
-        setTimeout(() => {
-          modalBetweenFail.classList.add('hidden');
-          player.health -= 1;
-          incerment = true
-          this.scene.restart();
-        }, 1000);
-
-      }
-    });
 }
 
-function update (){
+function update(){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
 
     if(this.physics.world.overlap(spaceship, planets)) {
-        clearInterval(frameIntervalId);
-        frameIndex = 0;
-        removePlanets();
-        this.scene.pause();
+        if(player.health === 1){
+            const divLives = document.getElementById("lives")
+            divLives.removeChild(divLives.lastChild);
+            clearInterval(frameIntervalId);
+            this.scene.pause();
+            const closeModal = document.getElementById('game-over-modal');
+            closeModal.classList.remove('hidden');
+
+            console.log(player);
+
+            // Players.create({
+            //     username: player.username,
+            //     key: Math.floor(Math.random() * 99999).toString().padStart(5, '0'),
+            //     totalScore: player.score,
+            //     totalGames: 5,
+            //     points: player.score,
+            //     levels: [{
+            //         level: currentLevel.level,
+            //         score: player.score,
+            //         games: 5
+            //     }],
+            //     spaceships: [{
+            //         name: "Faucon Millenium",
+            //         selected: true
+            //     }]
+            // })
+            // .catch(data => console.log(data))
+    
+            const restartGame = () => {
+                closeModal.classList.add('hidden');
+                reset(true);
+                this.scene.restart();
+                document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+            }
+            document.getElementById('game-over-restart').addEventListener('click', restartGame);
+            incrementLife = false;
+        }
+        else {
+            reset();
+            this.scene.pause();
+            const modalBetweenFail = document.getElementById("between-fail")
+            modalBetweenFail.classList.remove('hidden');
+            setTimeout(() => {
+              modalBetweenFail.classList.add('hidden');
+              player.health -= 1;
+              incrementLife = true
+              this.scene.restart();
+            }, 1000);
+        }
+
     }
+
+    if(planets.length >= 1){
+        planets.forEach(planet => {
+            if(planet.x < spaceship.x && !planet.passed) {
+                planet.passed = true;
+                player.score += Math.floor(Math.random() * 5) + 8;
+                updateBannerScore();
+            }
+            if(planet.x + planet.width / 2 < 0) removePlanet(planet);
+        })
+    }
+    
 
     const lastPlanet = planets[planets.length - 1];
     if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) {
-        clearInterval(frameIntervalId);
-        frameIndex = 0;
-        removePlanets();
+        reset(true);
         this.scene.pause();
     };
+}
+
+function updateBannerScore() {
+    document.querySelector("#score span").innerHTML = player.score;
+};
+
+function reset(restPlayer = false){
+    clearInterval(frameIntervalId);
+    if(restPlayer === true) {
+        player = new Players(player.username);
+        updateBannerScore();
+    }
+    frameIndex = 0;
+    removePlanets();
 }
 
 function createPlanet(game, planetData){
@@ -151,14 +185,16 @@ function removePlanets(){
 }
 
 async function startGame(event) {
-  player = new Player("", 0, 3, 1)
     event.preventDefault();
-    player.username = document.getElementById('username').value;
+    const username = document.getElementById('username').value;
+    if(!username) return;
+
+    player = new Players(username);
 
     const startModal = document.getElementById('start-game-modal');
     startModal.classList.add('hidden');
 
-    currentLevel = await getLevel(1).then(res => {
+    currentLevel = await Levels.get(1).then(res => {
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });

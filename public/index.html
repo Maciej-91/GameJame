@@ -9,15 +9,10 @@
 	<script type="module" src="./static/script/index.js"></script>
 </head>
 <body class="overflow-hidden bg-black">
-	<div id="banner" class="banner hidden">
-		<div class="text">
-			niveau : 1
-		</div>
-		<div class="text">
-			Votre score : 0
-		</div>
-		<div id="heart" class="heartDiv">
-		</div>
+	<div id="banner" class="bg-[#c51d2d] py-2.5 text-white w-full flex items-center space-between">
+		<div id="level" class="text-lg flex-1 text-center">Niveau : <span class="font-bold">1</span></div>
+		<div id="score" class="text-lg flex-1 text-center">Score : <span class="font-bold">0</span></div>
+		<div id="lives" class="flex flex-1 justify-center gap-x-4"></div>
 	</div>
 	<!-- Start Accueil Modal -->
 	<div id="start-game-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
@@ -99,26 +94,3 @@
 	</div>
 </body>
 </html>
-<style>
-	.banner {
-		width: 100%; 
-		height: 5rem; 
-		background-color: red; 
-		display: none; 
-		flex-direction: row; 
-		justify-content: space-between; 
-		padding: 0.5rem;
-	}
-	.text {
-		font-size: 2em;
-		color: white;
-	}
-	.heartDiv {
-		display: flex;
-		flex-direction: row;
-	}
-	.heart {
-		width: 80px;
-		height: 80px;
-	}
-</style>
