@@ -2,6 +2,8 @@ import express from 'express';
 import { Player } from '../models';
 const router: express.Router = express.Router();
 
+const generateKey = (): number => Math.floor(Math.random() * 99999);
+
 router.get('/', (req, res) => {
     Player.find()
         .then((players) => {
@@ -27,20 +29,16 @@ router.get('/:id', (req, res) => {
             res.status(500).send("Internal server error");
         });
 });
-//create a player
+
 router.post('/', (req, res) => {
-    const { username, totalScore, totalGames, levels, spaceships } = req.body;
-    const newPlayer = new Player({
-        username,
-        totalScore,
-        totalGames,
-        levels,
-        spaceships
-    });
-    newPlayer.save()
-        .then((player) => {
-            res.send(player);
-        })
+    const { username, key, totalScore, totalGames, points, levels, spaceships } = req.body;
+    if(!username) return res.status(400).send("No username provided");
+    if(!key) return res.status(400).send("No key provided");
+    if(!levels) return res.status(400).send("No levels provided");
+    if(!spaceships) return res.status(400).send("No spaceships provided");
+    const player = { username, key, totalScore, totalGames, points, levels, spaceships };
+    Player.create(player)
+        .then((player) => player ? res.status(201).send() : res.status(500).send("Internal server error"))
         .catch((err) => {
             console.error(err);
             res.status(500).send("Internal server error");
