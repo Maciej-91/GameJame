@@ -85,7 +85,9 @@ function update(){
             this.scene.pause();
             document.getElementById('game-over-modal').classList.remove('hidden');;
 
-            console.log(player);
+            const playerCookie = getCookie(player);
+            if(!playerCookie || (playerCookie && player.score > playerCookie.score)) setCookie(player);
+
 
             // Players.create({
             //     username: player.username,
@@ -104,7 +106,13 @@ function update(){
             //     }]
             // })
             // .catch(data => console.log(data))
-    
+            const restartGame = () => {
+                document.getElementById('game-over-modal').classList.add('hidden');
+                reset(true);
+                this.scene.restart();
+                document.getElementById('game-over-restart').removeEventListener('click', restartGame);
+            }
+            
             document.getElementById('game-over-restart').addEventListener('click', restartGame);
             document.getElementById('ranking-open').addEventListener('click', showRankingModal);
             document.getElementById('ranking-close').addEventListener('click', showGameOverModal);
@@ -135,7 +143,6 @@ function update(){
         })
     }
     
-
     const lastPlanet = planets[planets.length - 1];
     if(lastPlanet && lastPlanet.x + lastPlanet.width / 2 < 0) {
         reset(true);
@@ -154,13 +161,6 @@ const showGameOverModal = () => {
     document.getElementById('game-over-restart').removeEventListener('click', showGameOverModal);
 }
 
-const restartGame = () => {
-    document.getElementById('game-over-modal').classList.add('hidden');
-    reset(true);
-    this.scene.restart();
-    document.getElementById('game-over-restart').removeEventListener('click', restartGame);
-}
-
 function updateBannerScore() {
     document.querySelector("#score span").innerHTML = player.score;
 };
@@ -169,7 +169,9 @@ function reset(resetPlayer = false){
     clearInterval(frameIntervalId);
     son.stop();
     if(resetPlayer === true) {
-        player = new Players(player.username);
+        player.score = 0;
+        player.health = 3;
+        player.level = 1;
         updateBannerScore();
     }
     frameIndex = 0;
@@ -254,6 +256,16 @@ async function startGame(event) {
     new Phaser.Game(config);
 }
 
+function setCookie(player){
+    document.cookie = `player_${player.username}_${player.key}=${JSON.stringify({ username: player.username, key: player.key, score: player.score })}; path=/`;
+}
+
+function getCookie(player){
+    const cookies = document.cookie.split(';');
+    const cookie = cookies.find(cookie => cookie.includes(`player_${player.username}_${player.key}`));
+    if(!cookie) return;
+    return JSON.parse(cookie.split('=')[1]);
+}
 function init (){
     const startModal = document.getElementById('start-game-modal');
     startModal.classList.remove('hidden');
