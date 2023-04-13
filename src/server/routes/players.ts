@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id: string = req.params.id;
+    if(id === 'topfive') return
     if(!id) return res.status(400).send("No id provided");
     Player.findById(id)
         .then((player) => {
