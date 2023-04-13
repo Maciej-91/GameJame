@@ -1,9 +1,6 @@
 import Phaser from 'phaser';
-import Level from './level.js';
-
-async function getLevel(level) {
-    return Level.get(level);
-}
+import Levels from './levels.js';
+import Players from './players.js';
 
 function getScreenSize() {
     return {
@@ -49,13 +46,13 @@ const topBannerStyle = {
     color: '#ffffff',
 }
  
-function preload (){
+function preload(){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
     this.load.image('planet', './static/img/death-star.png');
     this.load.image('heart', './static/img/heart.png');
 }
 
-function create (){
+function create(){
     this.add.rectangle(0, 0, getScreenSize().width, 70, 0xc51d2d).setOrigin(0, 0).setDepth(1);
 
     topBannerLevel = this.add.text(50, 18, `niveau : ${currentLevel.level} `, topBannerStyle).setDepth(1);
@@ -79,7 +76,7 @@ function create (){
     frameIntervalId = setInterval(() => createPlanets(this, currentLevel.frames[frameIndex]), 1000);
 }
 
-function update (){
+function update(){
     if(cursors.space.isDown) spaceship.setVelocity(0, -200);
 
     if(this.physics.world.overlap(spaceship, planets)) {
@@ -87,6 +84,24 @@ function update (){
         this.scene.pause();
         const closeModal = document.getElementById('game-over-modal');
         closeModal.classList.remove('hidden');
+
+        Players.create({
+            username: username,
+            key: Math.floor(Math.random() * 99999).toString().padStart(5, '0'),
+            totalScore: score,
+            totalGames: 5,
+            points: score,
+            levels: [{
+                level: currentLevel.level,
+                score: score,
+                games: 5
+            }],
+            spaceships: [{
+                name: "Faucon Millenium",
+                selected: true
+            }]
+        })
+        .catch(data => console.log(data))
 
         const restartGame = () => {
             closeModal.classList.add('hidden');
@@ -157,7 +172,7 @@ async function startGame(event) {
     const startModal = document.getElementById('start-game-modal');
     startModal.classList.add('hidden');
 
-    currentLevel = await getLevel(1).then(res => {
+    currentLevel = await Levels.get(1).then(res => {
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });
