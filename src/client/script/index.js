@@ -1,8 +1,13 @@
 import Phaser from 'phaser';
 import Levels from './levels.js';
 import Players from './players.js';
+import Ranking from './ranking.js'
 
 const IMG_PATH = './static/img';
+
+async function getRanking(ranking) {
+  return Ranking.get(ranking);
+}
 
 function getScreenSize() {
     return {
@@ -36,6 +41,7 @@ let frameIntervalId;
 let currentLevel = null;
 let player;
 let incrementLife = false;
+let son;
 
 
 //Variable test fonction cookie
@@ -47,6 +53,7 @@ let nom_joueur = "joueur1";
 function preload (){
     this.load.image('spaceship', `${IMG_PATH}/millennium-falcon.png`);
     this.load.image('planet', `${IMG_PATH}/death-star.png`);
+    this.load.audio('son', './static/sound/mixkit-game-level-music-689.wav');
 }
 
 function create (){
@@ -157,6 +164,7 @@ function update(){
             incrementLife = false;
         }
         else {
+            son.stop()
             reset();
             this.scene.pause();
             const modalBetweenFail = document.getElementById("between-fail")
@@ -245,6 +253,12 @@ player = new Player("", 0, 3, 1)
         if(res.ok) return res.json();
         throw new Error('Failed to load level');
     });
+    //Méthode pour récupérer le classement
+    let ranking = await getRanking('topfive').then(res => {
+      if(res.ok) return res.json();
+      throw new Error('Failed to return Ranking')
+    })
+    console.log("ranking", ranking)
     new Phaser.Game(config);
 }
 
