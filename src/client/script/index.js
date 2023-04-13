@@ -38,14 +38,19 @@ let frameIntervalId;
 let currentLevel = null;
 let player;
 let incerment = false;
+let son;
 
 function preload (){
     this.load.image('spaceship', './static/img/millennium-falcon.png');
     this.load.image('planet', './static/img/death-star.png');
     this.load.image('heart', './static/img/heart.png');
+    this.load.audio('son', './static/sound/mixkit-game-level-music-689.wav');
 }
 
 function create (){
+  son = this.sound.add('son', { loop: true, volume: 0.5 });
+  son.play();
+
   if(incerment === false) {
     document.getElementById("banner").style.display = "flex"
     const divHeart = document.getElementById("heart")
@@ -91,6 +96,7 @@ function create (){
         document.getElementById('game-over-restart').addEventListener('click', restartGame);
         incerment = false;
       } else {
+        son.stop()
         this.scene.pause();
         const modalBetweenFail = document.getElementById("between-fail")
         modalBetweenFail.classList.remove('hidden');
