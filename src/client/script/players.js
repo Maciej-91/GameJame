@@ -5,6 +5,7 @@ export default class Players {
   score;
   health;
   level;
+  levels;
 
   constructor(username) {
     this.username = username;
@@ -12,6 +13,7 @@ export default class Players {
     this.score = 0;
     this.health = 3;
     this.level = 1;
+    this.levels = [];
   }
 
   static async get(username, key) {

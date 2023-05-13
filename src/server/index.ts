@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 require('dotenv').config(path.resolve(__dirname, '.env'));
 
 const app: express.Application = express();
-const PORT: number = Number(process.env.PORT) || 8080;
+const PORT: number = Number(process.env.PORT) || 8000;
 
 require('./config/db.config')
 

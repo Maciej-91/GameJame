@@ -107,6 +107,10 @@ function update(){
         else {
             reset();
             this.scene.pause();
+            if(player.level > 1) {
+              player.score = player.levels[player.level - 2].score;
+              updateBannerScore();
+            }
             document.getElementById("between-fail").classList.remove('hidden');
             setTimeout(() => {
               document.getElementById("between-fail").classList.add('hidden');
@@ -135,6 +139,7 @@ function update(){
 }
 
 async function nextLevel(game){
+    player.levels.push({level: currentLevel.level, score: player.score});
     player.level += 1;
     const lastLevel = currentLevel.level;
     son.stop();
@@ -147,9 +152,16 @@ async function nextLevel(game){
         .catch(() => {
             setCookie(player);
             Ranking.create(player).then(() => {
-                Ranking.get(10).then(response => response.json()).then(rankings => createRankingTable(rankings));
+                Ranking.get(10).then(response => response.json()).then(rankings => {createRankingTable(rankings)});
             });
             reset();
+            const reloadGame = () => {
+                window.location.reload();
+                document.getElementById('game-end-restart').removeEventListener('click', reloadGame);
+            }
+            document.getElementById('game-end-restart').classList.remove('hidden');
+            document.getElementById('ranking-close').classList.add('hidden');
+            document.getElementById('game-end-restart').addEventListener('click', reloadGame);
             showRankingModal();
             game.scene.pause();
         });

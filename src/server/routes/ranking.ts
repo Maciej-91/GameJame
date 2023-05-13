@@ -30,7 +30,6 @@ router.get('/:limit', (req, res) => {
 
 router.post('/', (req, res) => {
     const { username, key, score } = req.body;
-    console.log(req.body)
     if(!username) return res.status(400).send("No name provided");
     if(!key) return res.status(400).send("No key provided");
     const ranking = { username, key, score };
